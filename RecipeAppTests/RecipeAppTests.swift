@@ -5,13 +5,17 @@
 //  Created by Anthony Le on 4/18/25.
 //
 
-import Testing
+import XCTest
 @testable import RecipeApp
 
-struct RecipeAppTests {
+class RecipeAppTests: XCTestCase {
+    let viewModel = RecipeViewModel()
 
-    @Test func example() async throws {
-        // Write your test here and use APIs like `#expect(...)` to check expected conditions.
+    func testFetchRecipes() async throws {
+        let recipes = try await viewModel.fetchRecipes()
+        
+        print(recipes)
+        XCTAssertFalse(recipes.isEmpty)
+        XCTAssertNotNil(recipes.first?.name)
     }
-
 }
