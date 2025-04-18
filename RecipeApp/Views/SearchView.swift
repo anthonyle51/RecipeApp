@@ -1,21 +1,18 @@
 //
-//  ContentView.swift
+//  SearchView.swift
 //  RecipeApp
 //
 //  Created by Anthony Le on 4/18/25.
 //
 
 import SwiftUI
-import SwiftData
 
-struct ContentView: View {
+struct SearchView: View {
     var body: some View {
-        TabView {
-            
-        }
+        Text("Search Recipes")
     }
 }
 
 #Preview {
-    ContentView()
+    SearchView()
 }
