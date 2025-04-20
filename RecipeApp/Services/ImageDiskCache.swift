@@ -27,7 +27,7 @@ class ImageDiskCache {
             print("Invalid cache directory URL")
             return
         }
-
+        
         if FileManager.default.fileExists(atPath: directory.path) {
             return
         }
@@ -63,8 +63,11 @@ class ImageDiskCache {
         do {
             let data = try Data(contentsOf: fileURL)
             return data
-        } catch {
-            print("Failed to load image: \(error.localizedDescription)")
+        } catch let error as NSError {
+            // if its not a file not found error
+            if !(error.domain == NSCocoaErrorDomain && error.code == NSFileReadNoSuchFileError) {
+                print("Failed to load image: \(error.localizedDescription)")
+            }
             return nil
         }
     }
@@ -76,8 +79,8 @@ class ImageDiskCache {
         return UIImage(data: data)
     }
     
-    func sha256CacheKey(from url: URL) -> String {
-        let data = Data(url.absoluteString.utf8)
+    func sha256CacheKey(from urlString: String) -> String {
+        let data = Data(urlString.utf8)
         let hashed = SHA256.hash(data: data)
         return hashed.map { String(format: "%02x", $0) }.joined()
     }

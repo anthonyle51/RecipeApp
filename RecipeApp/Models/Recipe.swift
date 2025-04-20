@@ -13,8 +13,8 @@ struct Recipe: Identifiable, Codable {
     let id: String
     let name: String
     let cuisine: String
-    let photoURLLarge: String
-    let photoURLSmall: String
+    let photoURLLarge: String?
+    let photoURLSmall: String?
     let sourceURL: String?
     let youtubeURL: String?
 

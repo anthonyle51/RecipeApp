@@ -9,14 +9,19 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
-    @State var selection: Int = 2
+    @State var selection: Int = 0
+    @StateObject var recipeVM = RecipeViewModel()
+
     
     var body: some View {
         TabView(selection: $selection) {
-            ProfileView()
+            FeedView(recipeVM: recipeVM)
+                .task {
+                    await recipeVM.loadRecipes()
+                }
                 .tabItem {
-                    Image(systemName: "person")
-                    Text("Profile")
+                    Image(systemName: "house")
+                    Text("Feed")
                 }
                 .tag(0)
             SearchView()
@@ -25,10 +30,10 @@ struct ContentView: View {
                     Text("Search")
                 }
                 .tag(1)
-            FeedView()
+            CreatePostView()
                 .tabItem {
-                    Image(systemName: "house")
-                    Text("Feed")
+                    Image(systemName: "plus")
+                    Text("Create Post")
                 }
                 .tag(2)
             ChatView()
@@ -37,10 +42,10 @@ struct ContentView: View {
                     Text("Chat")
                 }
                 .tag(3)
-            CreatePostView()
+            ProfileView()
                 .tabItem {
-                    Image(systemName: "plus")
-                    Text("Create Post")
+                    Image(systemName: "person")
+                    Text("Profile")
                 }
                 .tag(4)
         }
