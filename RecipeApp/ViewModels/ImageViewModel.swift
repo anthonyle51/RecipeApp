@@ -20,10 +20,11 @@ class ImageViewModel: ObservableObject {
         self.key = ImageDiskCache.shared.sha256CacheKey(from: imageURLString)
     }
     
-    func loadImage() {
+    @MainActor
+    func loadImage() async {
         // Load from cache
-        if let image = ImageDiskCache.shared.loadImageAsUIImage(forKey: key) {
-            self.image = image
+        if let imageFromCache = ImageDiskCache.shared.loadImageAsUIImage(forKey: key) {
+            self.image = imageFromCache
             return
         }
 
@@ -33,21 +34,18 @@ class ImageViewModel: ObservableObject {
             return
         }
 
-        DispatchQueue.global(qos: .background).async {
-            guard let imageData = try? Data(contentsOf: url) else {
-                print("Failure to load data from URL")
-                return
-            }
-            
-            guard let image = UIImage(data: imageData) else {
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+
+            guard let imageFromCDN = UIImage(data: data) else {
                 print("failure to load image from data")
                 return
             }
-            
-            ImageDiskCache.shared.saveImage(imageData, forKey: self.key)
-            DispatchQueue.main.async {
-                self.image = image
-            }
+
+            ImageDiskCache.shared.saveImage(data, forKey: key)
+            self.image = imageFromCDN
+        } catch {
+            print("Failed to fetch image: \(error.localizedDescription)")
         }
     }
     

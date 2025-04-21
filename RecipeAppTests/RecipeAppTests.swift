@@ -9,7 +9,7 @@ import XCTest
 @testable import RecipeApp
 
 class RecipeAppTests: XCTestCase {
-    let viewModel = RecipeViewModel()
+    let viewModel = RecipeLoaderViewModel()
 
     func testFetchRecipes() async throws {
         let recipes = try await viewModel.fetchRecipes()

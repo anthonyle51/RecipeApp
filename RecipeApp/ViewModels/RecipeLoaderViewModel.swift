@@ -6,7 +6,7 @@
 //
 import Foundation
 
-class RecipeViewModel: ObservableObject {
+class RecipeLoaderViewModel: ObservableObject {
     @Published var recipes: [Recipe] = []
 
     private let service = RecipeService()

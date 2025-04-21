@@ -9,7 +9,7 @@ struct RecipeListResponse: Codable {
     let recipes: [Recipe]
 }
 
-struct Recipe: Identifiable, Codable {
+struct Recipe: Identifiable, Codable, Hashable {
     let id: String
     let name: String
     let cuisine: String
@@ -26,6 +26,14 @@ struct Recipe: Identifiable, Codable {
         case photoURLSmall = "photo_url_small"
         case sourceURL = "source_url"
         case youtubeURL = "youtube_url"
+    }
+    
+    var highestResPhotoURL: String? {
+        return photoURLLarge ?? photoURLSmall
+    }
+
+    var lowestResPhotoURL: String? {
+        return photoURLSmall ?? photoURLLarge
     }
 }
 
