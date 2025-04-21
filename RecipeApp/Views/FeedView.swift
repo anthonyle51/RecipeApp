@@ -18,19 +18,46 @@ struct FeedView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                LazyVGrid(columns: columns, spacing: 20) {
-                    ForEach(recipeLoaderVM.recipes) { recipe in
-                        NavigationLink(value: recipe) {
-                            if let photoURL = recipe.highestResPhotoURL {
-                                feedItemView(recipe: recipe, imageVM: ImageViewModel(imageURLString: photoURL))
+                VStack {
+                    if recipeLoaderVM.recipes.isEmpty && !recipeLoaderVM.isStartUp {
+                        Spacer()
+                        VStack{
+                            Text("No recipes at the moment...")
+                        }
+                        Spacer()
+                    } else {
+                        LazyVGrid(columns: columns, spacing: 20) {
+                            ForEach(recipeLoaderVM.recipes) { recipe in
+                                NavigationLink(value: recipe) {
+                                    if let photoURL = recipe.highestResPhotoURL {
+                                        feedItemView(recipe: recipe, imageVM: ImageViewModel(imageURLString: photoURL))
+                                    }
+                                }
+                                .onAppear {
+                                    if recipe == recipeLoaderVM.recipes.last {
+                                        Task {
+                                            await recipeLoaderVM.loadMoreRecipes()
+                                        }
+                                    }
+                                }
+                                
+                                if recipeLoaderVM.isLoading {
+                                    ProgressView().padding()
+                                }
                             }
                         }
+                        .padding()
                     }
                 }
-                .padding()
+            }
+            .onAppear() {
+                Task {
+                    await recipeLoaderVM.loadInitialRecipes()
+                }
             }
             .refreshable {
-                await recipeLoaderVM.loadRecipes()
+                await recipeLoaderVM.loadInitialRecipesRefresher()
+
             }
             .navigationDestination(for: Recipe.self) { recipe in
                 if let photoURL = recipe.highestResPhotoURL {
@@ -62,7 +89,7 @@ struct feedItemView: View {
                     .lineLimit(1)
                     .truncationMode(.tail)
             }
-            .frame(height: 20) // Fixes layout issues caused by GeometryReader
+            .frame(height: 20)
         }
         .onAppear() {
             Task {

@@ -16,9 +16,6 @@ struct ContentView: View {
     var body: some View {
         TabView(selection: $selection) {
             FeedView(recipeLoaderVM: recipeLoaderVM)
-                .task {
-                    await recipeLoaderVM.loadRecipes()
-                }
                 .tabItem {
                     Image(systemName: "house")
                     Text("Feed")
