@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct FeedView: View {
-    @ObservedObject var recipeLoaderVM: RecipeLoaderViewModel
-    
+    @StateObject var recipeLoaderVM = RecipeLoaderViewModel()
+
     let columns = [
         GridItem(.flexible()),
         GridItem(.flexible())
@@ -26,7 +26,7 @@ struct FeedView: View {
                         }
                         Spacer()
                     } else {
-                        LazyVGrid(columns: columns, spacing: 20) {
+                        LazyVGrid(columns: columns, spacing: 10) {
                             ForEach(recipeLoaderVM.recipes) { recipe in
                                 NavigationLink(value: recipe) {
                                     if let photoURL = recipe.highestResPhotoURL {
@@ -34,7 +34,7 @@ struct FeedView: View {
                                     }
                                 }
                                 .onAppear {
-                                    if recipe == recipeLoaderVM.recipes.last {
+                                    if recipe == recipeLoaderVM.recipes.last && recipeLoaderVM.canLoadMore {
                                         Task {
                                             await recipeLoaderVM.loadMoreRecipes()
                                         }
@@ -77,19 +77,26 @@ struct feedItemView: View {
             if let image = imageVM.image {
                 Image(uiImage: image)
                     .resizable()
-                    .cornerRadius(5)
+                    .cornerRadius(10)
                     .aspectRatio(contentMode: .fit)
+                    .padding(.vertical, 0)
             }
             
-            GeometryReader { geometry in
-                Text(recipe.name)
-                    .foregroundColor(.primary)
-                    .font(.caption)
-                    .frame(maxWidth: geometry.size.width * 0.8, alignment: .leading)
-                    .lineLimit(1)
-                    .truncationMode(.tail)
-            }
-            .frame(height: 20)
+            Text(recipe.name)
+                .foregroundColor(.primary)
+                .font(.caption)
+                .lineLimit(1)
+                .truncationMode(.tail)
+                .padding(.vertical, 0)
+                
+            
+            Text(recipe.cuisine)
+                .foregroundColor(.primary)
+                .font(.caption)
+                .fontWeight(.thin)
+                .lineLimit(1)
+                .padding(.vertical, 0)
+
         }
         .onAppear() {
             Task {

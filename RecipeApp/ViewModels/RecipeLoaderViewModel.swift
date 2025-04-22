@@ -9,17 +9,17 @@ import Foundation
 class RecipeLoaderViewModel: ObservableObject {
     @Published var recipes: [Recipe] = []
     @Published var isLoading: Bool = false
-    @Published var isStartUp: Bool = false
+    @Published var isStartUp: Bool = true
+    @Published var canLoadMore = true
 
     private let service = RecipeService()
     private var page = 0
     private let limit = 20
-    private var canLoadMore = true
     
     // keep data in VM
     @MainActor
     func loadInitialRecipes() async {
-        self.isStartUp = true
+        if !isStartUp { return }
         self.page = 0
         self.canLoadMore = true
         self.recipes = []
@@ -27,10 +27,9 @@ class RecipeLoaderViewModel: ObservableObject {
         self.isStartUp = false
     }
     
-    // Pretend it took longer to get data
     @MainActor
     func loadInitialRecipesRefresher() async {
-        try? await Task.sleep(for: .seconds(2))
+        try? await Task.sleep(for: .seconds(1))
         self.page = 0
         self.canLoadMore = true
         self.recipes = []

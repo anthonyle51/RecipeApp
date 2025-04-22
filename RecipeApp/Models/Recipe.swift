@@ -5,6 +5,8 @@
 //  Created by Anthony Le on 4/18/25.
 //
 
+import Foundation
+
 struct RecipeListResponse: Codable {
     let recipes: [Recipe]
 }
@@ -34,6 +36,16 @@ struct Recipe: Identifiable, Codable, Hashable {
 
     var lowestResPhotoURL: String? {
         return photoURLSmall ?? photoURLLarge
+    }
+    
+    var youtubeID: String? {
+        guard let url = youtubeURL,
+              let components = URLComponents(string: url),
+              components.host?.contains("youtube.com") == true,
+              let queryItems = components.queryItems else {
+            return nil
+        }
+        return queryItems.first(where: { $0.name == "v" })?.value
     }
 }
 

@@ -10,12 +10,11 @@ import SwiftData
 
 struct ContentView: View {
     @State var selection: Int = 0
-    @StateObject var recipeLoaderVM = RecipeLoaderViewModel()
 
     
     var body: some View {
         TabView(selection: $selection) {
-            FeedView(recipeLoaderVM: recipeLoaderVM)
+            FeedView()
                 .tabItem {
                     Image(systemName: "house")
                     Text("Feed")
