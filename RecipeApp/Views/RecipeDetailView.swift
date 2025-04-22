@@ -12,19 +12,34 @@ struct RecipeDetailView: View {
     var recipe: Recipe
     @ObservedObject var imageVM: ImageViewModel
     @Environment(\.dismiss) private var dismiss
+    @State private var isEmbeddable: Bool = false
 
     
     var body: some View {
         VStack {
             ScrollView {
                 ZStack(alignment: .topLeading){
-                    if let image = imageVM.image {
-                        Image(uiImage: image)
-                            .resizable()
-                            .cornerRadius(20)
-                            .padding(.all, 5)
-                            .aspectRatio(contentMode: .fit)
-                            .frame(maxWidth: .infinity)
+                    if isEmbeddable == true, let youtubeID = recipe.youtubeID {
+                        VStack {
+                            Rectangle()
+                                .frame(height:50)
+                                .opacity(0)
+                                .edgesIgnoringSafeArea(.all)
+                            
+                            YouTubeView(videoID: youtubeID)
+                                .cornerRadius(20)
+                                .padding(5)
+                                .frame(height: 300)
+                        }
+                    } else {
+                        if let image = imageVM.image {
+                            Image(uiImage: image)
+                                .resizable()
+                                .cornerRadius(20)
+                                .padding(5)
+                                .aspectRatio(contentMode: .fit)
+                                .frame(maxWidth: .infinity)
+                        }
                     }
                     
                     Button(action: {
@@ -63,11 +78,6 @@ struct RecipeDetailView: View {
                             }
                     }
                     
-                    if let youtubeID = recipe.youtubeID {
-                        YouTubeView(videoID: youtubeID)
-                            .frame(height: 300)
-
-                    }
                     
                     
                 }
@@ -79,6 +89,15 @@ struct RecipeDetailView: View {
         .onAppear() {
             Task {
                 await imageVM.loadImage()
+            }
+            if let youtubeID = recipe.youtubeID {
+                isYouTubeVideoEmbeddable(videoID: youtubeID) { available in
+                    DispatchQueue.main.async {
+                        self.isEmbeddable = available
+                    }
+                }
+            } else {
+                isEmbeddable = false
             }
         }
     }
