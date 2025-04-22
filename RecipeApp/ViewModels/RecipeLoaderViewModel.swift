@@ -12,9 +12,14 @@ class RecipeLoaderViewModel: ObservableObject {
     @Published var isStartUp: Bool = true
     @Published var canLoadMore = true
 
-    private let service = RecipeService()
+
     private var page = 0
     private let limit = 20
+    
+    private let service: RecipeServiceProtocol
+    init(service: RecipeServiceProtocol = RecipeService()) {
+        self.service = service
+    }
     
     // keep data in VM
     @MainActor

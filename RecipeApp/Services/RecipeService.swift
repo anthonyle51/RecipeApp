@@ -7,7 +7,11 @@
 
 import Foundation
 
-class RecipeService {
+protocol RecipeServiceProtocol {
+    func fetchRecipes(page: Int, limit: Int) async throws -> [Recipe]
+}
+
+class RecipeService: RecipeServiceProtocol {
     func fetchRecipes(page: Int, limit: Int) async throws -> [Recipe] {
         let url = URL(string: "https://d3jbb8n5wk0qxi.cloudfront.net/recipes.json")!
 
